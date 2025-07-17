@@ -185,6 +185,36 @@
 @endsection
 
 @section('scripts')
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Notification helpers
+    function showSuccessAndRedirect(message, redirectUrl) {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: message,
+            showConfirmButton: false,
+            timer: 1800,
+            timerProgressBar: true,
+            didClose: () => {
+                window.location.href = redirectUrl;
+            }
+        });
+    }
+    function showError(message) {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: message,
+            showConfirmButton: false,
+            timer: 2500,
+            timerProgressBar: true
+        });
+    }
+</script>
 <script>
     let selectedRole = '';
 
