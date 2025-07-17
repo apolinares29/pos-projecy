@@ -29,7 +29,14 @@ class POSController extends Controller
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
             'payment_method' => 'required|in:cash,card,mobile_payment',
-            'notes' => 'nullable|string'
+            'notes' => 'nullable|string',
+            'card_number' => 'required_if:payment_method,card|nullable|string|regex:/^[0-9]{12,19}$/',
+            'mobile_payment_reference' => 'required_if:payment_method,mobile_payment|nullable|string|max:32',
+            'amount_tendered' => 'nullable|numeric|min:0',
+        ], [
+            'card_number.required_if' => 'Card number is required for card payments.',
+            'card_number.regex' => 'Card number must be 12-19 digits.',
+            'mobile_payment_reference.required_if' => 'Reference number is required for mobile payments.'
         ]);
 
         try {
@@ -74,6 +81,22 @@ class POSController extends Controller
             }
 
             // Create sale record
+            $extraNotes = $request->notes;
+            if ($request->payment_method === 'card' && $request->card_number) {
+                $last4 = substr(preg_replace('/\D/', '', $request->card_number), -4);
+                $extraNotes = trim(($extraNotes ? $extraNotes . ' ' : '') . '(Card ending in ' . $last4 . ')');
+            }
+            if ($request->payment_method === 'mobile_payment' && $request->mobile_payment_reference) {
+                $extraNotes = trim(($extraNotes ? $extraNotes . ' ' : '') . '(Mobile Ref: ' . $request->mobile_payment_reference . ')');
+            }
+            // For cash, validate amount tendered and add to notes
+            if ($request->payment_method === 'cash' && $request->amount_tendered !== null) {
+                if ($request->amount_tendered < $finalAmount) {
+                    throw new \Exception('Amount tendered is insufficient.');
+                }
+                $change = $request->amount_tendered - $finalAmount;
+                $extraNotes = trim(($extraNotes ? $extraNotes . ' ' : '') . '(Cash: Tendered ₱' . number_format($request->amount_tendered,2) . ', Change ₱' . number_format($change,2) . ')');
+            }
             $sale = Sale::create([
                 'transaction_number' => Sale::generateTransactionNumber(),
                 'user_id' => $user->id,
@@ -83,7 +106,7 @@ class POSController extends Controller
                 'final_amount' => $finalAmount,
                 'payment_method' => $request->payment_method,
                 'status' => 'completed',
-                'notes' => $request->notes
+                'notes' => $extraNotes
             ]);
 
             // Create sale items and update stock

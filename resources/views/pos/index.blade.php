@@ -114,6 +114,26 @@
                                 <option value="mobile_payment">Mobile Payment</option>
                             </select>
                         </div>
+                        <!-- Card Number (only for card) -->
+                        <div class="mb-4" id="cardNumberDiv" style="display:none;">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Card Number</label>
+                            <input type="text" id="cardNumber" maxlength="19" placeholder="Card Number" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" />
+                        </div>
+                        <!-- Mobile Payment Reference (only for mobile payment) -->
+                        <div class="mb-4" id="mobilePaymentRefDiv" style="display:none;">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Mobile Payment Reference</label>
+                            <input type="text" id="mobilePaymentRef" maxlength="32" placeholder="Reference Number" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" />
+                        </div>
+                        <!-- Amount Tendered (only for cash) -->
+                        <div class="mb-4" id="amountTenderedDiv" style="display:none;">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Amount Tendered</label>
+                            <input type="number" min="0" step="0.01" id="amountTendered" placeholder="Enter amount tendered" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" />
+                        </div>
+                        <!-- Change (only for cash) -->
+                        <div class="mb-4" id="changeDiv" style="display:none;">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Change</label>
+                            <input type="text" id="change" readonly class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100" />
+                        </div>
 
                         <!-- Notes -->
                         <div class="mb-6">
@@ -309,14 +329,41 @@
                 return;
             }
 
+            const paymentMethod = $('#paymentMethod').val();
+            if (paymentMethod === 'card' && !$('#cardNumber').val()) {
+                showError('Please enter a card number.');
+                return;
+            }
+            if (paymentMethod === 'mobile_payment' && !$('#mobilePaymentRef').val()) {
+                showError('Please enter a mobile payment reference number.');
+                return;
+            }
+            if (paymentMethod === 'cash') {
+                const total = parseFloat($('#total').text().replace('₱','').replace(/,/g, '')) || 0;
+                const tendered = parseFloat($('#amountTendered').val()) || 0;
+                if (!tendered || tendered < total) {
+                    showError('Amount tendered is insufficient.');
+                    return;
+                }
+            }
+
             const saleData = {
                 items: cart.map(item => ({
                     product_id: item.product_id,
                     quantity: item.quantity
                 })),
-                payment_method: $('#paymentMethod').val(),
+                payment_method: paymentMethod,
                 notes: $('#notes').val()
             };
+
+            // Add card number or mobile payment reference if applicable
+            if (paymentMethod === 'card') {
+                saleData.card_number = $('#cardNumber').val();
+            } else if (paymentMethod === 'mobile_payment') {
+                saleData.mobile_payment_reference = $('#mobilePaymentRef').val();
+            } else if (paymentMethod === 'cash') {
+                saleData.amount_tendered = $('#amountTendered').val();
+            }
 
             $.ajax({
                 url: '{{ route("pos.process-sale") }}',
@@ -344,6 +391,45 @@
                 }
             });
         });
+
+        // Show/hide payment fields based on method
+        $('#paymentMethod').on('change', function() {
+            const method = $(this).val();
+            if (method === 'card') {
+                $('#cardNumberDiv').show();
+                $('#mobilePaymentRefDiv').hide();
+                $('#amountTenderedDiv').hide();
+                $('#changeDiv').hide();
+            } else if (method === 'mobile_payment') {
+                $('#cardNumberDiv').hide();
+                $('#mobilePaymentRefDiv').show();
+                $('#amountTenderedDiv').hide();
+                $('#changeDiv').hide();
+            } else if (method === 'cash') {
+                $('#cardNumberDiv').hide();
+                $('#mobilePaymentRefDiv').hide();
+                $('#amountTenderedDiv').show();
+                $('#changeDiv').show();
+            } else {
+                $('#cardNumberDiv').hide();
+                $('#mobilePaymentRefDiv').hide();
+                $('#amountTenderedDiv').hide();
+                $('#changeDiv').hide();
+            }
+            updateChange();
+        });
+        // Calculate and update change for cash
+        function updateChange() {
+            const paymentMethod = $('#paymentMethod').val();
+            if (paymentMethod !== 'cash') return;
+            const total = parseFloat($('#total').text().replace('₱','').replace(/,/g, '')) || 0;
+            const tendered = parseFloat($('#amountTendered').val()) || 0;
+            const change = tendered - total;
+            $('#change').val('₱' + (change >= 0 ? change.toFixed(2) : '0.00'));
+        }
+        $('#amountTendered').on('input', updateChange);
+        // Initialize on page load
+        $('#paymentMethod').trigger('change');
 
         // Initialize
         updateCartDisplay();
