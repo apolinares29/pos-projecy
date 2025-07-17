@@ -8,12 +8,45 @@ use App\Http\Controllers\AdministratorController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\TwoFactorController;
+use App\Http\Controllers\GuestController;
 
-Route::get('/', [AuthController::class, 'showLogin']);
+Route::get('/', [GuestController::class, 'dashboard'])->name('guest.dashboard');
+
+// Smart redirects for dashboard URLs
+Route::get('/cashier', function () {
+    if (!session('authenticated') || !session('role')) {
+        return redirect('/');
+    }
+    if (session('role') === 'cashier') {
+        return redirect()->route('pos.index');
+    }
+    return redirect('/dashboard/' . session('role'));
+});
+
+Route::get('/supervisor', function () {
+    if (!session('authenticated') || !session('role')) {
+        return redirect('/');
+    }
+    if (session('role') === 'supervisor') {
+        return redirect()->route('supervisor.index');
+    }
+    return redirect('/dashboard/' . session('role'));
+});
+
+Route::get('/administrator', function () {
+    if (!session('authenticated') || !session('role')) {
+        return redirect('/');
+    }
+    if (session('role') === 'administrator') {
+        return redirect()->route('administrator.index');
+    }
+    return redirect('/dashboard/' . session('role'));
+});
 
 // Authentication routes
-Route::get('/register', [AuthController::class, 'showRegister']);
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout']);
 
@@ -32,7 +65,7 @@ Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name(
 Route::get('/dashboard/{role}', [AuthController::class, 'dashboard']);
 
 // POS routes (Cashier - Read Only)
-Route::prefix('pos')->name('pos.')->middleware('session.auth')->group(function () {
+Route::prefix('pos')->name('pos.')->middleware(['session.auth', 'role:cashier'])->group(function () {
     Route::get('/', [POSController::class, 'index'])->name('index');
     Route::post('/process-sale', [POSController::class, 'processSale'])->name('process-sale');
     Route::get('/receipt/{saleId}', [POSController::class, 'printReceipt'])->name('receipt');
@@ -42,7 +75,7 @@ Route::prefix('pos')->name('pos.')->middleware('session.auth')->group(function (
 });
 
 // Supervisor routes
-Route::prefix('supervisor')->name('supervisor.')->middleware('session.auth')->group(function () {
+Route::prefix('supervisor')->name('supervisor.')->middleware(['session.auth', 'role:supervisor'])->group(function () {
     Route::get('/', [SupervisorController::class, 'index'])->name('index');
     Route::get('/products', [SupervisorController::class, 'products'])->name('products');
     Route::get('/products/create', [SupervisorController::class, 'createProduct'])->name('create-product');
@@ -56,7 +89,6 @@ Route::prefix('supervisor')->name('supervisor.')->middleware('session.auth')->gr
     Route::get('/price-override', [SupervisorController::class, 'priceOverride'])->name('price-override');
     Route::put('/products/{id}/price', [SupervisorController::class, 'updatePrice'])->name('update-price');
     Route::get('/team-performance', [SupervisorController::class, 'teamPerformance'])->name('team-performance');
-    
     // Sales management (Supervisor only)
     Route::get('/sales', [SupervisorController::class, 'sales'])->name('sales');
     Route::get('/sales/{id}/edit', [POSController::class, 'editSale'])->name('edit-sale');
@@ -65,9 +97,8 @@ Route::prefix('supervisor')->name('supervisor.')->middleware('session.auth')->gr
 });
 
 // Administrator routes
-Route::prefix('administrator')->name('administrator.')->middleware('session.auth')->group(function () {
+Route::prefix('administrator')->name('administrator.')->middleware(['session.auth', 'role:administrator'])->group(function () {
     Route::get('/', [AdministratorController::class, 'index'])->name('index');
-    
     // User management
     Route::get('/users', [AdministratorController::class, 'users'])->name('users');
     Route::get('/users/create', [AdministratorController::class, 'createUser'])->name('create-user');
@@ -75,7 +106,6 @@ Route::prefix('administrator')->name('administrator.')->middleware('session.auth
     Route::get('/users/{id}/edit', [AdministratorController::class, 'editUser'])->name('edit-user');
     Route::put('/users/{id}', [AdministratorController::class, 'updateUser'])->name('update-user');
     Route::delete('/users/{id}', [AdministratorController::class, 'deleteUser'])->name('delete-user');
-    
     // System analytics
     Route::get('/analytics', [AdministratorController::class, 'systemAnalytics'])->name('analytics');
     Route::get('/logs', [AdministratorController::class, 'systemLogs'])->name('logs');
@@ -84,7 +114,6 @@ Route::prefix('administrator')->name('administrator.')->middleware('session.auth
     Route::post('/logs/clear', [AdministratorController::class, 'clearOldLogs'])->name('clear-old-logs');
     Route::get('/settings', [AdministratorController::class, 'systemSettings'])->name('settings');
     Route::put('/settings', [AdministratorController::class, 'updateSettings'])->name('update-settings');
-    
     // Inherit all supervisor functions
     Route::get('/products', [AdministratorController::class, 'products'])->name('products');
     Route::get('/products/create', [AdministratorController::class, 'createProduct'])->name('create-product');

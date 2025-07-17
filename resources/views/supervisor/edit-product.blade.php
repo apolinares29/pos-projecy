@@ -33,7 +33,7 @@
 
         <!-- Product Form -->
         <div class="bg-white shadow rounded-lg p-6">
-            <form action="{{ route('supervisor.update-product', $product->id) }}" method="POST">
+            <form action="{{ route('supervisor.update-product', $product->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 
@@ -58,12 +58,27 @@
                         @enderror
                     </div>
 
+                    <div class="mb-4">
+                        <label for="image" class="block text-sm font-medium text-gray-700">Product Image</label>
+                        @if($product->image)
+                            <div class="mt-2 mb-2">
+                                <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="w-32 h-32 object-cover rounded-lg border">
+                                <p class="text-sm text-gray-500 mt-1">Current image</p>
+                            </div>
+                        @endif
+                        <input type="file" name="image" id="image" accept="image/*" class="mt-1 block w-full text-sm text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-sm text-gray-500 mt-1">Leave empty to keep current image</p>
+                        @error('image')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
                             <div class="mt-1 relative rounded-lg shadow-sm">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 sm:text-sm">$</span>
+                                    <span class="text-gray-500 sm:text-sm">₱</span>
                                 </div>
                                 <input type="number" name="price" id="price" step="0.01" min="0" value="{{ $product->price }}" required
                                        class="pl-7 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -85,34 +100,22 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="sku" class="block text-sm font-medium text-gray-700">SKU</label>
-                            <input type="text" name="sku" id="sku" value="{{ $product->sku }}" required
-                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                   placeholder="Enter SKU">
-                            @error('sku')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
-                            <select name="category" id="category" required
-                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option value="">Select category</option>
-                                <option value="Electronics" {{ $product->category === 'Electronics' ? 'selected' : '' }}>Electronics</option>
-                                <option value="Accessories" {{ $product->category === 'Accessories' ? 'selected' : '' }}>Accessories</option>
-                                <option value="Storage" {{ $product->category === 'Storage' ? 'selected' : '' }}>Storage</option>
-                                <option value="Cables" {{ $product->category === 'Cables' ? 'selected' : '' }}>Cables</option>
-                                <option value="Monitors" {{ $product->category === 'Monitors' ? 'selected' : '' }}>Monitors</option>
-                                <option value="Printers" {{ $product->category === 'Printers' ? 'selected' : '' }}>Printers</option>
-                                <option value="Other" {{ $product->category === 'Other' ? 'selected' : '' }}>Other</option>
-                            </select>
-                            @error('category')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                        <select name="category" id="category" required
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Select category</option>
+                            <option value="Electronics" {{ $product->category === 'Electronics' ? 'selected' : '' }}>Electronics</option>
+                            <option value="Accessories" {{ $product->category === 'Accessories' ? 'selected' : '' }}>Accessories</option>
+                            <option value="Storage" {{ $product->category === 'Storage' ? 'selected' : '' }}>Storage</option>
+                            <option value="Cables" {{ $product->category === 'Cables' ? 'selected' : '' }}>Cables</option>
+                            <option value="Monitors" {{ $product->category === 'Monitors' ? 'selected' : '' }}>Monitors</option>
+                            <option value="Printers" {{ $product->category === 'Printers' ? 'selected' : '' }}>Printers</option>
+                            <option value="Other" {{ $product->category === 'Other' ? 'selected' : '' }}>Other</option>
+                        </select>
+                        @error('category')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>

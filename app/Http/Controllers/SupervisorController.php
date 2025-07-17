@@ -107,12 +107,30 @@ class SupervisorController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
-            'sku' => 'required|string|unique:products,sku,' . $id,
             'category' => 'required|string|max:255',
             'is_active' => 'boolean',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
-        $product->update($request->all());
+        // Handle image upload
+        $imagePath = $product->image; // Keep existing image by default
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = uniqid('prod_') . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('products'), $imageName);
+            $imagePath = 'products/' . $imageName;
+        }
+
+        $product->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'price' => $request->price,
+            'stock_quantity' => $request->stock_quantity,
+            'category' => $request->category,
+            'is_active' => $request->has('is_active'),
+            'image' => $imagePath,
+        ]);
+        
         // Log product update
         ActivityLogger::log('update', 'Product', $product->id, 'Product updated: ' . $product->name);
 

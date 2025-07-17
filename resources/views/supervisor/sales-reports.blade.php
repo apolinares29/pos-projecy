@@ -89,10 +89,10 @@
                                 {{ $cashier->transactions }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                ${{ number_format($cashier->total_sales, 2) }}
+                                ₱{{ number_format($cashier->total_sales, 2) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                ${{ number_format($cashier->total_sales / $cashier->transactions, 2) }}
+                                ₱{{ number_format($cashier->total_sales / $cashier->transactions, 2) }}
                             </td>
                         </tr>
                         @endforeach
@@ -127,7 +127,7 @@
                                 {{ $product->total_quantity }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                ${{ number_format($product->total_revenue, 2) }}
+                                ₱{{ number_format($product->total_revenue, 2) }}
                             </td>
                         </tr>
                         @endforeach
@@ -145,7 +145,7 @@
             data: {
                 labels: @json($salesByDate->pluck('date')),
                 datasets: [{
-                    label: 'Sales ($)',
+                    label: 'Sales (₱)',
                     data: @json($salesByDate->pluck('total_sales')),
                     borderColor: 'rgb(59, 130, 246)',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -159,7 +159,7 @@
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
-                                return '$' + value.toLocaleString();
+                                return '₱' + value.toLocaleString();
                             }
                         }
                     }

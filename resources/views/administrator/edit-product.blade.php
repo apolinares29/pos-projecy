@@ -67,7 +67,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                     <div>
-                        <label for="price" class="block text-sm font-medium text-gray-700">Price ($)</label>
+                        <label for="price" class="block text-sm font-medium text-gray-700">Price (₱)</label>
                         <input type="number" name="price" id="price" 
                                value="{{ old('price', $product->price) }}"
                                min="0" step="0.01"

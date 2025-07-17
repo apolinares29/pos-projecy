@@ -46,7 +46,7 @@
                         <div class="ml-5 w-0 flex-1">
                             <dl>
                                 <dt class="text-sm font-medium text-gray-500 truncate">Today's Sales</dt>
-                                <dd class="text-lg font-medium text-gray-900">${{ number_format($todaySales, 2) }}</dd>
+                                <dd class="text-lg font-medium text-gray-900">₱{{ number_format($todaySales, 2) }}</dd>
                             </dl>
                         </div>
                     </div>
@@ -128,7 +128,7 @@
                                 {{ $sale->saleItems->count() }} items
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                ${{ number_format($sale->final_amount, 2) }}
+                                ₱{{ number_format($sale->final_amount, 2) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 

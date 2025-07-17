@@ -46,7 +46,7 @@
                             <dl>
                                 <dt class="text-sm font-medium text-gray-500 truncate">Total Team Sales</dt>
                                 <dd class="text-lg font-medium text-gray-900">
-                                    ${{ number_format($performanceData->sum('today_sales'), 2) }}
+                                    ₱{{ number_format($performanceData->sum('today_sales'), 2) }}
                                 </dd>
                             </dl>
                         </div>
@@ -133,20 +133,20 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                ${{ number_format($data['today_sales'], 2) }}
+                                ₱{{ number_format($data['today_sales'], 2) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 {{ $data['today_transactions'] }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 @if($data['today_transactions'] > 0)
-                                    ${{ number_format($data['today_sales'] / $data['today_transactions'], 2) }}
+                                    ₱{{ number_format($data['today_sales'] / $data['today_transactions'], 2) }}
                                 @else
-                                    $0.00
+                                    ₱0.00
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                ${{ number_format($data['monthly_sales'], 2) }}
+                                ₱{{ number_format($data['monthly_sales'], 2) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @php
@@ -187,7 +187,7 @@
             data: {
                 labels: @json($performanceData->pluck('cashier.username')),
                 datasets: [{
-                    label: 'Today\'s Sales ($)',
+                    label: 'Today\'s Sales (₱)',
                     data: @json($performanceData->pluck('today_sales')),
                     backgroundColor: 'rgba(59, 130, 246, 0.8)',
                     borderColor: 'rgb(59, 130, 246)',
@@ -201,7 +201,7 @@
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
-                                return '$' + value.toLocaleString();
+                                return '₱' + value.toLocaleString();
                             }
                         }
                     }
