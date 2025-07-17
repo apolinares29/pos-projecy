@@ -100,7 +100,7 @@
                         <div class="ml-5 w-0 flex-1">
                             <dl>
                                 <dt class="text-sm font-medium text-gray-500 truncate">Total Revenue</dt>
-                                <dd class="text-lg font-medium text-gray-900">${{ number_format($systemMetrics['total_revenue'], 2) }}</dd>
+                                <dd class="text-lg font-medium text-gray-900">@if($currency == 'PHP')₱@else{{ $currency }}@endif{{ number_format($systemMetrics['total_revenue'], 2) }}</dd>
                             </dl>
                         </div>
                     </div>
@@ -118,7 +118,7 @@
                         <div class="ml-5 w-0 flex-1">
                             <dl>
                                 <dt class="text-sm font-medium text-gray-500 truncate">Avg Sale Value</dt>
-                                <dd class="text-lg font-medium text-gray-900">${{ number_format($systemMetrics['avg_sale_value'], 2) }}</dd>
+                                <dd class="text-lg font-medium text-gray-900">@if($currency == 'PHP')₱@else{{ $currency }}@endif{{ number_format($systemMetrics['avg_sale_value'], 2) }}</dd>
                             </dl>
                         </div>
                     </div>
@@ -186,7 +186,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $activity->transactions }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${{ number_format($activity->total_sales, 2) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@if($currency == 'PHP')₱@else{{ $currency }}@endif{{ number_format($activity->total_sales, 2) }}</td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -215,7 +215,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $product->name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $product->category }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $product->total_quantity }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${{ number_format($product->total_revenue, 2) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@if($currency == 'PHP')₱@else{{ $currency }}@endif{{ number_format($product->total_revenue, 2) }}</td>
                             </tr>
                             @endforeach
                         </tbody>

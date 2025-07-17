@@ -66,9 +66,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 {{ $sale->saleItems->count() }} items
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                ${{ number_format($sale->final_amount, 2) }}
-                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">@if($currency == 'PHP')₱@else{{ $currency }}@endif{{ number_format($sale->final_amount, 2) }}</td>
                         </tr>
                         @endforeach
                     </tbody>

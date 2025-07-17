@@ -185,11 +185,12 @@
                         class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
                     Export Logs (JSON)
                 </button>
-                <button type="button" 
-                        class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg transition-colors"
-                        onclick="clearOldLogs()">
-                    Clear Old Logs
-                </button>
+                <form method="POST" action="{{ route('administrator.clear-old-logs') }}" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        Clear Old Logs
+                    </button>
+                </form>
             </div>
         </div>
 
