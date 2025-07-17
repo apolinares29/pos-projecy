@@ -17,6 +17,8 @@ class Product extends Model
         'stock_quantity',
         'sku',
         'category',
+        'low_stock',
+        'max_stock',
         'is_active',
         'image', // Added for product image upload
     ];

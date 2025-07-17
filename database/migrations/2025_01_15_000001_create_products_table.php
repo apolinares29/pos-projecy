@@ -19,6 +19,8 @@ return new class extends Migration
             $table->integer('stock_quantity');
             $table->string('sku')->unique();
             $table->string('category')->nullable();
+            $table->integer('low_stock')->nullable();
+            $table->integer('max_stock')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

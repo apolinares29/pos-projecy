@@ -1,5 +1,4 @@
-@extends('layouts.app')
-
+ 
 @section('title', 'POS System - Process Sales')
 
 @section('styles')
