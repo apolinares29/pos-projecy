@@ -84,25 +84,35 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                            <input 
-                                type="password" 
-                                id="password" 
-                                name="password" 
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="Create a strong password"
-                                required
-                            >
+                            <div class="relative">
+                                <input 
+                                    type="password" 
+                                    id="password" 
+                                    name="password" 
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
+                                    placeholder="Create a strong password"
+                                    required
+                                >
+                                <button type="button" id="toggleRegisterPassword" tabindex="-1" class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 focus:outline-none" aria-label="Show password">
+                                    <svg id="registerEyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                </button>
+                            </div>
                         </div>
                         <div>
                             <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
-                            <input 
-                                type="password" 
-                                id="password_confirmation" 
-                                name="password_confirmation" 
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="Confirm your password"
-                                required
-                            >
+                            <div class="relative">
+                                <input 
+                                    type="password" 
+                                    id="password_confirmation" 
+                                    name="password_confirmation" 
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
+                                    placeholder="Confirm your password"
+                                    required
+                                >
+                                <button type="button" id="toggleRegisterPasswordConfirm" tabindex="-1" class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 focus:outline-none" aria-label="Show password confirmation">
+                                    <svg id="registerEyeIconConfirm" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -314,5 +324,31 @@
             });
         });
     });
+
+    // Show/hide password toggle for register
+    const registerPasswordInput = document.getElementById('password');
+    const toggleRegisterPassword = document.getElementById('toggleRegisterPassword');
+    const registerEyeIcon = document.getElementById('registerEyeIcon');
+    if (toggleRegisterPassword && registerPasswordInput) {
+        toggleRegisterPassword.addEventListener('click', function() {
+            const isPassword = registerPasswordInput.type === 'password';
+            registerPasswordInput.type = isPassword ? 'text' : 'password';
+            registerEyeIcon.innerHTML = isPassword
+                ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.956 9.956 0 012.042-3.368m3.087-2.933A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.973 9.973 0 01-4.043 5.306M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18" />'
+                : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />';
+        });
+    }
+    const registerPasswordInputConfirm = document.getElementById('password_confirmation');
+    const toggleRegisterPasswordConfirm = document.getElementById('toggleRegisterPasswordConfirm');
+    const registerEyeIconConfirm = document.getElementById('registerEyeIconConfirm');
+    if (toggleRegisterPasswordConfirm && registerPasswordInputConfirm) {
+        toggleRegisterPasswordConfirm.addEventListener('click', function() {
+            const isPassword = registerPasswordInputConfirm.type === 'password';
+            registerPasswordInputConfirm.type = isPassword ? 'text' : 'password';
+            registerEyeIconConfirm.innerHTML = isPassword
+                ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.956 9.956 0 012.042-3.368m3.087-2.933A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.973 9.973 0 01-4.043 5.306M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18" />'
+                : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />';
+        });
+    }
 </script>
 @endsection 
