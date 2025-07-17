@@ -1,4 +1,4 @@
- 
+@extends('layouts.app')
 @section('title', 'POS System - Process Sales')
 
 @section('styles')
@@ -266,11 +266,11 @@
                     <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div class="flex-1">
                             <h4 class="font-medium text-gray-900">${item.name}</h4>
-                            <p class="text-sm text-gray-600">₱${item.price.toFixed(2)} x ${item.quantity}</p>
+                            <p class="text-sm text-gray-600">₱${item.price.toLocaleString('en-US', { minimumFractionDigits: 2 })} x <span class="font-bold text-blue-600">${item.quantity}</span></p>
                         </div>
                         <div class="flex items-center space-x-2">
                             <button class="quantity-btn bg-gray-200 hover:bg-gray-300 w-6 h-6 rounded flex items-center justify-center" data-index="${index}">-</button>
-                            <span class="text-sm font-medium">${item.quantity}</span>
+                            <input type="number" class="quantity-input border border-blue-400 bg-blue-50 text-blue-700 rounded w-12 text-center" min="1" max="${item.stock}" value="${item.quantity}" data-index="${index}" style="outline:none;" />
                             <button class="quantity-btn bg-gray-200 hover:bg-gray-300 w-6 h-6 rounded flex items-center justify-center" data-index="${index}">+</button>
                             <button class="remove-btn text-red-500 hover:text-red-700 ml-2" data-index="${index}">×</button>
                         </div>
@@ -297,6 +297,16 @@
             updateCartDisplay();
         });
 
+        // Quantity input direct change
+        $(document).on('change', '.quantity-input', function() {
+            const index = $(this).data('index');
+            let val = parseInt($(this).val());
+            if (isNaN(val) || val < 1) val = 1;
+            if (val > cart[index].stock) val = cart[index].stock;
+            cart[index].quantity = val;
+            updateCartDisplay();
+        });
+
         // Remove item
         $(document).on('click', '.remove-btn', function() {
             const index = $(this).data('index');
@@ -310,9 +320,9 @@
             const tax = subtotal * 0.1;
             const total = subtotal + tax;
 
-            $('#subtotal').text('₱' + subtotal.toFixed(2));
-            $('#tax').text('₱' + tax.toFixed(2));
-            $('#total').text('₱' + total.toFixed(2));
+            $('#subtotal').text('₱' + subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 }));
+            $('#tax').text('₱' + tax.toLocaleString('en-US', { minimumFractionDigits: 2 }));
+            $('#total').text('₱' + total.toLocaleString('en-US', { minimumFractionDigits: 2 }));
         }
 
         // Clear cart
@@ -424,7 +434,7 @@
             const total = parseFloat($('#total').text().replace('₱','').replace(/,/g, '')) || 0;
             const tendered = parseFloat($('#amountTendered').val()) || 0;
             const change = tendered - total;
-            $('#change').val('₱' + (change >= 0 ? change.toFixed(2) : '0.00'));
+            $('#change').val('₱' + (change >= 0 ? change.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '0.00'));
         }
         $('#amountTendered').on('input', updateChange);
         // Initialize on page load
