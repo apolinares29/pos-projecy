@@ -31,7 +31,9 @@ class SupervisorController extends Controller
 
     public function products()
     {
-        $products = Product::withCount('saleItems')->paginate(20);
+        $products = Product::withCount('saleItems')
+            ->orderBy('updated_at', 'desc')
+            ->paginate(20);
         return view('supervisor.products', compact('products'));
     }
 
