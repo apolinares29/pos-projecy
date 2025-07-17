@@ -1,14 +1,17 @@
 # POS System - User Role Selection
 
-A Laravel-based Point of Sale (POS) system with role-based user authentication and dashboards.
+A Laravel-based Point of Sale (POS) system with role-based user authentication, product management, and dashboards.
 
 ## Features
 
-- **Role-based User Selection**: Choose between Administrator, Supervisor, and Cashier roles
-- **Interactive UI**: Beautiful, responsive design with smooth animations
-- **Role-specific Dashboards**: Each role has a customized dashboard with relevant information
-- **User Registration**: Complete registration system with role selection
-- **Email Verification**: Secure email verification system for new accounts
+- **Role-based User Selection**: Administrator, Supervisor, and Cashier roles
+- **Interactive UI**: Responsive design with smooth animations
+- **Role-specific Dashboards**: Customized dashboards for each role
+- **User Registration & Email Verification**
+- **Product Management**: Add, edit, and manage products (with images and discounts)
+- **Sales Processing**: Manage sales and sale items
+- **Activity Logs**: Track system activities
+- **System Analytics & Reports**
 - **Demo Authentication**: Pre-configured demo credentials for testing
 
 ## User Roles & Demo Credentials
@@ -33,7 +36,7 @@ A Laravel-based Point of Sale (POS) system with role-based user authentication a
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd pos-mini-project
+   cd pos-projecy
    ```
 
 2. **Install dependencies**
@@ -47,10 +50,24 @@ A Laravel-based Point of Sale (POS) system with role-based user authentication a
    php artisan key:generate
    ```
 
-4. **Database setup** (optional for demo)
-   ```bash
-   php artisan migrate
-   ```
+4. **Database setup**
+   - Create a database and update your `.env` file with the correct DB credentials.
+   - Run migrations:
+     ```bash
+     php artisan migrate
+     ```
+   - (Optional) Seed dummy data for products:
+     ```bash
+     php artisan db:seed --class=ProductSeeder
+     ```
+   - To seed all data (including users, products, sales, etc.):
+     ```bash
+     php artisan db:seed
+     ```
+   - To reset and re-seed everything:
+     ```bash
+     php artisan migrate:fresh --seed
+     ```
 
 5. **Start the development server**
    ```bash
@@ -59,7 +76,6 @@ A Laravel-based Point of Sale (POS) system with role-based user authentication a
 
 6. **Access the application**
    - Open your browser and go to `http://localhost:8000`
-   - You'll see the role selection page with three buttons
 
 ## How to Use
 
@@ -77,73 +93,77 @@ A Laravel-based Point of Sale (POS) system with role-based user authentication a
 4. **Verify Email**: Check your email and click the verification link
 5. **Login**: Use your new credentials to log in to the system
 
+### Product Management & Seeding
+- To add dummy products for testing, run:
+  ```bash
+  php artisan db:seed --class=ProductSeeder
+  ```
+- Product images are stored in `public/products/`.
+- You can manage products from the Administrator or Supervisor dashboard.
+
 ## File Structure
 
 ```
-pos-mini-project/
+pos-projecy/
 ├── app/
-│   ├── Http/Controllers/
-│   │   └── AuthController.php          # Handles authentication logic
-│   ├── Models/
-│   │   └── User.php                    # User model with role support
-│   └── Notifications/
-│       └── EmailVerificationNotification.php  # Email verification
-├── resources/views/
-│   ├── home.blade.php                  # Main role selection page
-│   ├── auth/
-│   │   ├── register.blade.php          # Registration form
-│   │   └── email-verified.blade.php    # Email verification success
-│   ├── emails/
-│   │   └── verify-email.blade.php      # Email verification template
-│   └── dashboard/
-│       ├── administrator.blade.php     # Administrator dashboard
-│       ├── supervisor.blade.php        # Supervisor dashboard
-│       └── cashier.blade.php           # Cashier dashboard
+│   ├── Helpers/                  # Activity logger and helpers
+│   ├── Http/Controllers/         # Controllers for all roles and features
+│   ├── Models/                   # Eloquent models (User, Product, Sale, etc.)
+│   ├── Notifications/            # Email and 2FA notifications
+│   └── Providers/                # Service providers
+├── config/                       # Configuration files
+├── database/
+│   ├── factories/                # Model factories
+│   ├── migrations/               # Database migrations
+│   └── seeders/                  # Seeders (ProductSeeder, etc.)
+├── public/
+│   └── products/                 # Uploaded product images
+├── resources/
+│   ├── views/                    # Blade templates for all roles and features
+│   └── css/js/                   # Frontend assets
 ├── routes/
-│   └── web.php                         # Application routes
-└── README.md                           # This file
+│   └── web.php                   # Application routes
+├── storage/                      # Logs, cache, etc.
+└── README.md                     # This file
 ```
 
 ## Technical Details
 
 - **Framework**: Laravel 10
-- **Frontend**: Tailwind CSS for styling
-- **Authentication**: Session-based with demo credentials and database users
-- **Email Verification**: Laravel's built-in email verification system
-- **Database**: MySQL/PostgreSQL with user roles and verification
-- **Responsive Design**: Works on desktop and mobile devices
-- **AJAX**: Form submission using fetch API
+- **Frontend**: Tailwind CSS
+- **Authentication**: Session-based, email verification, 2FA
+- **Database**: MySQL/PostgreSQL
+- **Product Images**: Uploaded and stored in `public/products/`
+- **Activity Logs**: Track user/system actions
+- **Responsive Design**: Works on desktop and mobile
 
 ## Customization
 
 ### Adding New Roles
-1. Add the role to the `$demoUsers` array in `AuthController.php`
+1. Add the role to the relevant logic in `User.php` and controllers
 2. Create a new dashboard view in `resources/views/dashboard/`
-3. Update the role selection buttons in `home.blade.php`
+3. Update the role selection in `home.blade.php`
 
 ### Modifying Dashboards
 Each dashboard view can be customized independently:
-- `administrator.blade.php` - Purple theme, system management features
-- `supervisor.blade.php` - Blue theme, team management features  
-- `cashier.blade.php` - Green theme, sales and transaction features
+- `administrator.blade.php` - System management features
+- `supervisor.blade.php` - Team management features
+- `cashier.blade.php` - Sales and transaction features
 
 ### Styling
-The application uses Tailwind CSS. You can modify the classes in the blade templates to change the appearance.
+The application uses Tailwind CSS. Modify classes in blade templates to change appearance.
 
 ## Security Notes
 
-⚠️ **Important**: This is a demo application with hardcoded credentials. For production use:
+⚠️ **Important**: This is a demo application. For production use:
 
-1. ✅ Implement proper database authentication (already implemented)
-2. ✅ Use Laravel's built-in authentication system (already implemented)
-3. ✅ Hash passwords properly (already implemented)
-4. ✅ Implement proper session management (already implemented)
-5. ✅ Add CSRF protection (already included)
-6. ✅ Use environment variables for sensitive data (already implemented)
-7. ✅ Email verification system (already implemented)
+- Use secure, unique credentials
+- Configure environment variables for sensitive data
+- Ensure email and session security
+- Remove or update demo users
 
 ### Email Configuration
-For email verification to work in production, configure your email settings in `.env`:
+For email verification, configure your email settings in `.env`:
 ```
 MAIL_MAILER=smtp
 MAIL_HOST=your-smtp-host
@@ -159,5 +179,4 @@ For development, emails are logged to `storage/logs/laravel.log`.
 
 ## Support
 
-For questions or issues, please refer to the Laravel documentation or create an issue in the repository.
-"# pos-projecy" 
+For questions or issues, please refer to the Laravel documentation or create an issue in the repository. 
