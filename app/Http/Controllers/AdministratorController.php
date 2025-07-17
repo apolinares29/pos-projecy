@@ -176,13 +176,15 @@ class AdministratorController extends Controller
         
         // System metrics
         $systemMetrics = [
-            'total_users' => User::count(),
-            'active_products' => Product::where('is_active', true)->count(),
-            'total_sales' => Sale::count(),
-            'total_revenue' => Sale::completed()->sum('final_amount'),
-            'avg_sale_value' => Sale::completed()->avg('final_amount'),
-            'low_stock_items' => Product::where('stock_quantity', '<=', 10)->where('stock_quantity', '>', 0)->count(),
-            'out_of_stock_items' => Product::where('stock_quantity', 0)->count(),
+            'total_users' => User::whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])->count(),
+            'active_products' => Product::where('is_active', true)->count(), // Not filtered by date
+            'total_sales' => Sale::whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])->count(),
+            'total_revenue' => Sale::completed()->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])->sum('final_amount'),
+            'avg_sale_value' => Sale::completed()->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])->avg('final_amount'),
+            'low_stock_items' => Product::where('stock_quantity', '<=', 10)->where('stock_quantity', '>', 0)
+                ->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])->count(),
+            'out_of_stock_items' => Product::where('stock_quantity', 0)
+                ->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])->count(),
         ];
         
         // Monthly trends
