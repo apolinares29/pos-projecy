@@ -14,15 +14,17 @@ class AdministratorSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'first_name' => 'System',
-            'last_name' => 'Administrator',
-            'username' => 'admin',
-            'email' => 'admin@possystem.com',
-            'password' => Hash::make('admin123'),
-            'role' => 'administrator',
-            'email_verified_at' => now(),
-        ]);
+        User::updateOrCreate(
+            ['username' => 'admin'],
+            [
+                'first_name' => 'System',
+                'last_name' => 'Administrator',
+                'email' => 'admin@possystem.com',
+                'password' => Hash::make('admin123'),
+                'role' => 'administrator',
+                'email_verified_at' => now(),
+            ]
+        );
 
         $this->command->info('Administrator user created successfully!');
         $this->command->info('Username: admin');

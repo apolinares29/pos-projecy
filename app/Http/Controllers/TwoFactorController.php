@@ -16,7 +16,8 @@ class TwoFactorController extends Controller
         if (!session('2fa_code') || !session('2fa_user')) {
             return redirect('/');
         }
-        return view('auth.2fa');
+        $expires = session('2fa_expires');
+        return view('auth.2fa', ['expires' => $expires]);
     }
 
     public function verify2fa(Request $request)

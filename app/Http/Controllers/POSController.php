@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Helpers\ActivityLogger;
+use Illuminate\Support\Facades\Auth;
 
 class POSController extends Controller
 {
@@ -157,6 +158,7 @@ class POSController extends Controller
     public function updateSale(Request $request, $id)
     {
         $sale = Sale::findOrFail($id);
+        $old = $sale->only(['status', 'payment_method', 'notes']);
         
         $request->validate([
             'status' => 'required|in:completed,pending,cancelled',
@@ -165,8 +167,14 @@ class POSController extends Controller
         ]);
 
         $sale->update($request->only(['status', 'payment_method', 'notes']));
-        // Log sale update
-        ActivityLogger::log('update', 'Sale', $sale->id, 'Sale updated.');
+        $new = $sale->only(['status', 'payment_method', 'notes']);
+        $diffMsg = ActivityLogger::diff($old, $new);
+        // Only log detailed diff if admin
+        if (Auth::check() && Auth::user()->role === 'administrator') {
+            ActivityLogger::log('update', 'Sale', $sale->id, 'Sale updated. ' . $diffMsg);
+        } else {
+            ActivityLogger::log('update', 'Sale', $sale->id, 'Sale updated.');
+        }
         return redirect()->route('pos.sales')->with('success', 'Sale updated successfully!');
     }
 

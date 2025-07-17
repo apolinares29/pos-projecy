@@ -96,6 +96,9 @@ class AdministratorController extends Controller
     public function updateUser(Request $request, $id)
     {
         $user = User::findOrFail($id);
+        $old = $user->only([
+            'first_name', 'last_name', 'username', 'email', 'role', 'email_verified_at'
+        ]);
         
         $request->validate([
             'first_name' => 'required|string|max:255',
@@ -113,8 +116,12 @@ class AdministratorController extends Controller
         }
 
         $user->update($data);
-        // Log user update
-        ActivityLogger::log('update', 'User', $user->id, 'User updated: ' . $user->username);
+        $new = $user->only([
+            'first_name', 'last_name', 'username', 'email', 'role', 'email_verified_at'
+        ]);
+        $diffMsg = ActivityLogger::diff($old, $new);
+        // Log user update with detailed diff
+        ActivityLogger::log('update', 'User', $user->id, 'User updated: ' . $user->username . '. ' . $diffMsg);
 
         return redirect()->route('administrator.users')->with('success', 'User updated successfully!');
     }
@@ -322,6 +329,9 @@ class AdministratorController extends Controller
     public function updateProduct(Request $request, $id)
     {
         $product = Product::findOrFail($id);
+        $old = $product->only([
+            'name', 'description', 'price', 'discount_percentage', 'stock_quantity', 'sku', 'category', 'is_active', 'image'
+        ]);
         
         $request->validate([
             'name' => 'required|string|max:255',
@@ -334,8 +344,12 @@ class AdministratorController extends Controller
         ]);
 
         $product->update($request->all());
-        // Log product update
-        ActivityLogger::log('update', 'Product', $product->id, 'Product updated: ' . $product->name);
+        $new = $product->only([
+            'name', 'description', 'price', 'discount_percentage', 'stock_quantity', 'sku', 'category', 'is_active', 'image'
+        ]);
+        $diffMsg = ActivityLogger::diff($old, $new);
+        // Log product update with detailed diff
+        ActivityLogger::log('update', 'Product', $product->id, 'Product updated: ' . $product->name . '. ' . $diffMsg);
 
         return redirect()->route('administrator.products')->with('success', 'Product updated successfully!');
     }
