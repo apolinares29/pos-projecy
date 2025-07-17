@@ -11,7 +11,7 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         // 1. Clear all products before seeding
-        \App\Models\Product::truncate();
+        \App\Models\Product::query()->delete();
 
         // 2. Prepare your product names and unique stock arrays
         $faker = \Faker\Factory::create();

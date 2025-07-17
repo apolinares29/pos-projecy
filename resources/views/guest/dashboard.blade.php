@@ -43,9 +43,6 @@
         @else
         <div class="text-center text-gray-500 py-12">No products available at the moment.</div>
         @endif
-        <div class="flex justify-center mt-8">
-            <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition">View All Products</a>
-        </div>
     </section>
 
     <!-- Features Section -->

@@ -10,7 +10,7 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        \App\Models\User::truncate();
+        User::query()->delete();
         // Sample supervisors
         User::create([
             'first_name' => 'Jane',

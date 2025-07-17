@@ -40,7 +40,7 @@
                         <div class="ml-5 w-0 flex-1">
                             <dl>
                                 <dt class="text-sm font-medium text-gray-500 truncate">Today's Sales</dt>
-                                <dd class="text-lg font-medium text-gray-900">${{ number_format($todaySales, 2) }}</dd>
+                                <dd class="text-lg font-medium text-gray-900">@if(isset($currency) ? $currency == 'PHP' : true)₱@else{{ $currency }}@endif{{ number_format($todaySales, 2) }}</dd>
                             </dl>
                         </div>
                     </div>
@@ -175,7 +175,7 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-sm font-medium text-gray-900">${{ number_format($sale->final_amount, 2) }}</p>
+                            <p class="text-sm font-medium text-gray-900">@if(isset($currency) ? $currency == 'PHP' : true)₱@else{{ $currency }}@endif{{ number_format($sale->final_amount, 2) }}</p>
                             <p class="text-xs text-gray-500">{{ ucfirst($sale->payment_method) }}</p>
                         </div>
                     </div>

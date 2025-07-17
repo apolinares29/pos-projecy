@@ -27,9 +27,9 @@
         <!-- Receipt Header -->
         <div class="text-center border-b-2 border-gray-300 pb-4 mb-4">
             <h1 class="text-2xl font-bold text-gray-900">POS SYSTEM</h1>
-            <p class="text-gray-600">123 Main Street, City, State 12345</p>
-            <p class="text-gray-600">Phone: (555) 123-4567</p>
-            <p class="text-gray-600">Email: info@possystem.com</p>
+            <p class="text-gray-600">Central Mindanao University</p>
+            <p class="text-gray-600">Phone: 0994XXXXXXX</p>
+            <p class="text-gray-600">Email: aliwate@gmail.com</p>
         </div>
 
         <!-- Transaction Details -->
@@ -104,7 +104,7 @@
             <p class="text-gray-600 mb-2">Thank you for your purchase!</p>
             <p class="text-sm text-gray-500">Please keep this receipt for your records</p>
             <p class="text-sm text-gray-500 mt-2">Return policy: 30 days with original receipt</p>
-            <p class="text-sm text-gray-500">For questions, call (555) 123-4567</p>
+            <p class="text-sm text-gray-500">For questions, call 0994XXXXXXX</p>
         </div>
 
         <!-- Barcode/QR Code Placeholder -->

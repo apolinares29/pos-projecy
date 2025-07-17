@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use App\Helpers\ActivityLogger;
 use App\Models\ActivityLog;
+use App\Models\Setting;
 
 class AdministratorController extends Controller
 {
@@ -41,12 +42,13 @@ class AdministratorController extends Controller
         $recentSales = Sale::with(['user', 'saleItems.product'])->latest()->take(10)->get();
         $recentUsers = User::latest()->take(5)->get();
         
+        $currency = Setting::get('currency', 'PHP');
         return view('administrator.index', compact(
             'totalUsers', 'totalProducts', 'totalSales', 'totalRevenue',
             'todaySales', 'todayTransactions', 'newUsersToday',
             'lowStockProducts', 'outOfStockProducts', 'inactiveProducts',
             'cashiers', 'supervisors', 'administrators',
-            'recentSales', 'recentUsers'
+            'recentSales', 'recentUsers', 'currency'
         ));
     }
 
@@ -199,8 +201,9 @@ class AdministratorController extends Controller
                 return $item;
             });
         
+        $currency = Setting::get('currency', 'PHP');
         return view('administrator.system-analytics', compact(
-            'salesByDate', 'userActivity', 'productPerformance', 'systemMetrics', 'monthlyTrends', 'startDate', 'endDate'
+            'salesByDate', 'userActivity', 'productPerformance', 'systemMetrics', 'monthlyTrends', 'startDate', 'endDate', 'currency'
         ));
     }
 
@@ -257,19 +260,34 @@ class AdministratorController extends Controller
 
     public function systemSettings()
     {
-        // In a real application, you would have a settings table
-        // For now, we'll create some sample settings
-        $settings = [
+        $defaults = [
             'company_name' => 'TechStore POS',
             'tax_rate' => 10.0,
-            'currency' => 'USD',
+            'currency' => 'PHP',
             'low_stock_threshold' => 10,
             'session_timeout' => 30,
             'backup_frequency' => 'daily',
             'email_notifications' => true,
             'sms_notifications' => false,
         ];
-        
+        $settings = [];
+        foreach ($defaults as $key => $default) {
+            $val = Setting::get($key);
+            if ($val === null) {
+                $settings[$key] = $default;
+            } else {
+                // Cast booleans and numbers
+                if (in_array($key, ['email_notifications', 'sms_notifications'])) {
+                    $settings[$key] = (bool)$val;
+                } elseif (in_array($key, ['tax_rate'])) {
+                    $settings[$key] = (float)$val;
+                } elseif (in_array($key, ['low_stock_threshold', 'session_timeout'])) {
+                    $settings[$key] = (int)$val;
+                } else {
+                    $settings[$key] = $val;
+                }
+            }
+        }
         return view('administrator.system-settings', compact('settings'));
     }
 
@@ -285,10 +303,13 @@ class AdministratorController extends Controller
             'email_notifications' => 'boolean',
             'sms_notifications' => 'boolean',
         ]);
-
-        // In a real application, you would save these to a settings table
-        // For now, we'll just redirect with a success message
-        
+        $fields = [
+            'company_name', 'tax_rate', 'currency', 'low_stock_threshold',
+            'session_timeout', 'backup_frequency', 'email_notifications', 'sms_notifications'
+        ];
+        foreach ($fields as $field) {
+            Setting::set($field, $request->input($field));
+        }
         return redirect()->route('administrator.system-settings')->with('success', 'System settings updated successfully!');
     }
 
@@ -489,6 +510,7 @@ class AdministratorController extends Controller
         $todaySales = Sale::today()->completed()->sum('final_amount');
         $todayTransactions = Sale::today()->completed()->count();
         
-        return view('administrator.sales', compact('sales', 'todaySales', 'todayTransactions'));
+        $currency = Setting::get('currency', 'PHP');
+        return view('administrator.sales', compact('sales', 'todaySales', 'todayTransactions', 'currency'));
     }
 } 
