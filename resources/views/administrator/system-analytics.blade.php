@@ -349,5 +349,38 @@
             }
         });
     </script>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced administrator system analytics notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showInfo('System analytics loaded successfully');
+            
+            // Auto-refresh analytics data every 5 minutes
+            setInterval(function() {
+                fetch('{{ route("administrator.analytics") }}')
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newAnalyticsContent = doc.querySelector('.space-y-8');
+                        const currentAnalyticsContent = document.querySelector('.space-y-8');
+                        if (newAnalyticsContent && currentAnalyticsContent) {
+                            currentAnalyticsContent.innerHTML = newAnalyticsContent.innerHTML;
+                            showInfo('System analytics refreshed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing analytics:', error);
+                    });
+            }, 300000);
+        });
+        
+        // Enhanced export functionality
+        function exportAnalytics(type) {
+            showInfo(`Exporting ${type} analytics...`);
+            // Add export logic here
+        }
+    </script>
 </body>
 </html> 

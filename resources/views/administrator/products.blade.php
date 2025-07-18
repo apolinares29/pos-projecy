@@ -124,15 +124,11 @@
                                 <div class="flex space-x-2">
                                     <a href="{{ route('administrator.edit-product', $product->id) }}" 
                                        class="text-blue-600 hover:text-blue-900">Edit</a>
-                                    <form action="{{ route('administrator.delete-product', $product->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" 
-                                                class="text-red-600 hover:text-red-900"
-                                                onclick="return confirm('Are you sure you want to delete this product?')">
-                                            Delete
-                                        </button>
-                                    </form>
+                                    <button type="button" 
+                                            class="text-red-600 hover:text-red-900"
+                                            onclick="confirmDeleteProduct({{ $product->id }}, '{{ $product->name }}')">
+                                        Delete
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -217,5 +213,59 @@
             </div>
         </div>
     </div>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced administrator products notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showInfo('Products data loaded successfully');
+            
+            // Auto-refresh products data every 2 minutes
+            setInterval(function() {
+                fetch('{{ route("administrator.products") }}')
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newProductsTable = doc.querySelector('.overflow-x-auto');
+                        const currentProductsTable = document.querySelector('.overflow-x-auto');
+                        if (newProductsTable && currentProductsTable) {
+                            currentProductsTable.innerHTML = newProductsTable.innerHTML;
+                            showInfo('Products data refreshed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing products:', error);
+                    });
+            }, 120000);
+        });
+        
+        // Enhanced delete confirmation
+        function confirmDeleteProduct(productId, productName) {
+            confirmDelete('Delete Product', `Are you sure you want to delete ${productName}?`, function() {
+                showInfo('Deleting product...');
+                
+                // Create and submit form programmatically
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `{{ url('administrator/products') }}/${productId}`;
+                
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                
+                const methodField = document.createElement('input');
+                methodField.type = 'hidden';
+                methodField.name = '_method';
+                methodField.value = 'DELETE';
+                
+                form.appendChild(csrfToken);
+                form.appendChild(methodField);
+                document.body.appendChild(form);
+                form.submit();
+            });
+        }
+    </script>
 </body>
 </html> 

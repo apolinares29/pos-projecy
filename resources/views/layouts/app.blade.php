@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'POS System')</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    @include('components.notifications')
     @yield('styles')
 </head>
 <body class="bg-gray-50">

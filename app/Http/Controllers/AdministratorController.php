@@ -216,7 +216,7 @@ class AdministratorController extends Controller
 
     public function exportLogsCsv()
     {
-        $logs = ActivityLog::orderByDesc('timestamp')->limit(1000)->get();
+        $logs = ActivityLog::orderByDesc('timestamp')->get();
         $filename = 'system_logs_' . date('Y-m-d_H-i-s') . '.csv';
         $headers = [
             'Content-Type' => 'text/csv',
@@ -244,7 +244,7 @@ class AdministratorController extends Controller
 
     public function exportLogsJson()
     {
-        $logs = ActivityLog::orderByDesc('timestamp')->limit(1000)->get();
+        $logs = ActivityLog::orderByDesc('timestamp')->get();
         $filename = 'system_logs_' . date('Y-m-d_H-i-s') . '.json';
         return response()->json($logs)
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
@@ -253,9 +253,9 @@ class AdministratorController extends Controller
 
     public function clearOldLogs()
     {
-        $deleted = ActivityLog::where('timestamp', '<', now()->subDays(30))->delete();
-        ActivityLogger::log('delete', 'ActivityLog', null, 'Admin cleared old logs. ' . $deleted . ' log(s) deleted.');
-        return redirect()->route('administrator.logs')->with('success', 'Old logs cleared successfully! Logs older than 30 days have been removed.');
+        $deleted = ActivityLog::query()->delete();
+        ActivityLogger::log('delete', 'ActivityLog', null, 'Admin cleared all logs. ' . $deleted . ' log(s) deleted.');
+        return redirect()->route('administrator.logs')->with('success', 'All logs cleared successfully!');
     }
 
     public function systemSettings()

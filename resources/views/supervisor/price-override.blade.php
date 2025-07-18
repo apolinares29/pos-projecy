@@ -67,7 +67,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                ${{ number_format($product->price, 2) }}
+                                ₱{{ number_format($product->price, 2) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 @if($product->discount_percentage > 0)
@@ -80,7 +80,7 @@
                                 @php
                                     $finalPrice = $product->price * (1 - $product->discount_percentage / 100);
                                 @endphp
-                                ${{ number_format($finalPrice, 2) }}
+                                ₱{{ number_format($finalPrice, 2) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <button onclick="openPriceModal({{ $product->id }}, '{{ $product->name }}', {{ $product->price }}, {{ $product->discount_percentage }})" 
@@ -112,7 +112,7 @@
                         <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Base Price</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 sm:text-sm">$</span>
+                                <span class="text-gray-500 sm:text-sm">₱</span>
                             </div>
                             <input type="number" name="price" id="price" step="0.01" min="0" required
                                    class="pl-7 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -132,7 +132,7 @@
                     
                     <div class="mb-4 p-3 bg-gray-50 rounded-lg">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Final Price Preview</label>
-                        <p id="finalPricePreview" class="text-lg font-bold text-green-600">$0.00</p>
+                        <p id="finalPricePreview" class="text-lg font-bold text-green-600">₱0.00</p>
                     </div>
                     
                     <div class="flex space-x-4">
@@ -148,6 +148,8 @@
         </div>
     </div>
 
+    @include('components.notifications')
+    
     <script>
         function openPriceModal(productId, productName, currentPrice, currentDiscount) {
             document.getElementById('productName').textContent = productName;
@@ -166,7 +168,7 @@
             const price = parseFloat(document.getElementById('price').value) || 0;
             const discount = parseFloat(document.getElementById('discount_percentage').value) || 0;
             const finalPrice = price * (1 - discount / 100);
-            document.getElementById('finalPricePreview').textContent = '$' + finalPrice.toFixed(2);
+            document.getElementById('finalPricePreview').textContent = '₱' + finalPrice.toFixed(2);
         }
 
         // Update preview when price or discount changes

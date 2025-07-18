@@ -78,15 +78,11 @@
                                     <a href="{{ route('administrator.edit-user', $user->id) }}" 
                                        class="text-blue-600 hover:text-blue-900">Edit</a>
                                     @if($user->role !== 'administrator' || $users->where('role', 'administrator')->count() > 1)
-                                    <form action="{{ route('administrator.delete-user', $user->id) }}" method="POST" class="inline">
+                                    <form id="deleteUserForm{{ $user->id }}" action="{{ route('administrator.delete-user', $user->id) }}" method="POST" style="display:none;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" 
-                                                class="text-red-600 hover:text-red-900"
-                                                onclick="return confirm('Are you sure you want to delete this user?')">
-                                            Delete
-                                        </button>
                                     </form>
+                                    <button type="button" class="text-red-600 hover:text-red-900" onclick="confirmDeleteUser({{ $user->id }}, '{{ $user->first_name }} {{ $user->last_name }}')">Delete</button>
                                     @endif
                                 </div>
                             </td>
@@ -172,5 +168,40 @@
             </div>
         </div>
     </div>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced administrator users notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showInfo('Users data loaded successfully');
+            
+            // Auto-refresh users data every 2 minutes
+            setInterval(function() {
+                fetch('{{ route("administrator.users") }}')
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newUsersTable = doc.querySelector('.overflow-x-auto');
+                        const currentUsersTable = document.querySelector('.overflow-x-auto');
+                        if (newUsersTable && currentUsersTable) {
+                            currentUsersTable.innerHTML = newUsersTable.innerHTML;
+                            showInfo('Users data refreshed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing users:', error);
+                    });
+            }, 120000);
+        });
+        
+        // Enhanced delete confirmation
+        function confirmDeleteUser(userId, userName) {
+            confirmDelete('Delete User', `Are you sure you want to delete ${userName}?`, function() {
+                showInfo('Deleting user...');
+                document.getElementById('deleteUserForm' + userId).submit();
+            });
+        }
+    </script>
 </body>
 </html> 

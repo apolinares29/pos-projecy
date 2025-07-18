@@ -112,8 +112,8 @@
                                 <p class="text-sm text-gray-500">Quantity: {{ $item->quantity }}</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-sm text-gray-600">${{ number_format($item->unit_price, 2) }} each</p>
-                                <p class="font-medium text-gray-900">${{ number_format($item->total_price, 2) }}</p>
+                                                        <p class="text-sm text-gray-600">₱{{ number_format($item->unit_price, 2) }} each</p>
+                        <p class="font-medium text-gray-900">₱{{ number_format($item->total_price, 2) }}</p>
                             </div>
                         </div>
                     </div>
@@ -125,21 +125,21 @@
                     <div class="space-y-2">
                         <div class="flex justify-between">
                             <span class="text-gray-600">Subtotal:</span>
-                            <span class="font-medium">${{ number_format($sale->total_amount, 2) }}</span>
+                            <span class="font-medium">₱{{ number_format($sale->total_amount, 2) }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Tax (10%):</span>
-                            <span class="font-medium">${{ number_format($sale->tax_amount, 2) }}</span>
+                            <span class="font-medium">₱{{ number_format($sale->tax_amount, 2) }}</span>
                         </div>
                         @if($sale->discount_amount > 0)
                         <div class="flex justify-between">
                             <span class="text-gray-600">Discount:</span>
-                            <span class="font-medium">-${{ number_format($sale->discount_amount, 2) }}</span>
+                            <span class="font-medium">-₱{{ number_format($sale->discount_amount, 2) }}</span>
                         </div>
                         @endif
                         <div class="flex justify-between text-lg font-bold border-t pt-2">
                             <span>Total:</span>
-                            <span class="text-green-600">${{ number_format($sale->final_amount, 2) }}</span>
+                            <span class="text-green-600">₱{{ number_format($sale->final_amount, 2) }}</span>
                         </div>
                     </div>
                 </div>
@@ -154,5 +154,26 @@
             </div>
         </div>
     </div>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced edit sale notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showInfo('Editing sale: {{ $sale->transaction_number }}');
+        });
+        
+        // Enhanced form submission
+        document.getElementById('editSaleForm').addEventListener('submit', function(e) {
+            showInfo('Updating sale...');
+        });
+        
+        // Enhanced delete item functionality
+        function confirmDeleteItem(itemId, itemName) {
+            confirmDelete('Delete Item', `Are you sure you want to remove ${itemName} from this sale?`, function() {
+                showInfo('Removing item...');
+                window.location.href = `{{ url('pos/sale') }}/{{ $sale->id }}/item/${itemId}/delete`;
+            });
+        }
+    </script>
 </body>
 </html> 

@@ -38,7 +38,7 @@
                         <div class="ml-5 w-0 flex-1">
                             <dl>
                                 <dt class="text-sm font-medium text-gray-500 truncate">Total Sales</dt>
-                                <dd class="text-lg font-medium text-gray-900">$45,231</dd>
+                                <dd class="text-lg font-medium text-gray-900">₱45,231</dd>
                             </dl>
                         </div>
                     </div>
@@ -138,5 +138,38 @@
             </div>
         </div>
     </div>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced administrator dashboard notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showSuccess('Welcome back, Administrator!');
+            
+            // Auto-refresh dashboard data every 30 seconds
+            setInterval(function() {
+                fetch('{{ route("administrator.index") }}')
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newMetrics = doc.querySelector('.grid.grid-cols-1.md\\:grid-cols-4.gap-6');
+                        const currentMetrics = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-4.gap-6');
+                        if (newMetrics && currentMetrics) {
+                            currentMetrics.innerHTML = newMetrics.innerHTML;
+                            showInfo('Dashboard data refreshed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing dashboard:', error);
+                    });
+            }, 30000);
+        });
+        
+        // Enhanced quick actions
+        function quickAction(action) {
+            showInfo(`Performing ${action}...`);
+            // Add specific action logic here
+        }
+    </script>
 </body>
 </html> 

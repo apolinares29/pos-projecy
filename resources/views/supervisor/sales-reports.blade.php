@@ -192,5 +192,38 @@
             }
         });
     </script>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced supervisor sales reports notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showInfo('Sales reports loaded successfully');
+            
+            // Auto-refresh reports data every 5 minutes
+            setInterval(function() {
+                fetch('{{ route("supervisor.sales-reports") }}')
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newReportsContent = doc.querySelector('.space-y-8');
+                        const currentReportsContent = document.querySelector('.space-y-8');
+                        if (newReportsContent && currentReportsContent) {
+                            currentReportsContent.innerHTML = newReportsContent.innerHTML;
+                            showInfo('Sales reports refreshed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing reports:', error);
+                    });
+            }, 300000);
+        });
+        
+        // Enhanced export functionality
+        function exportReport(type) {
+            showInfo(`Exporting ${type} report...`);
+            // Add export logic here
+        }
+    </script>
 </body>
 </html> 

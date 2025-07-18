@@ -95,6 +95,10 @@
                             <span class="text-gray-600">Subtotal:</span>
                             <span id="subtotal" class="font-medium">₱0.00</span>
                         </div>
+                        <div class="flex justify-between mb-2" id="discountRow" style="display:none;">
+                            <span class="text-gray-600">Discount:</span>
+                            <span id="discount" class="font-medium text-red-600">-₱0.00</span>
+                        </div>
                         <div class="flex justify-between mb-2">
                             <span class="text-gray-600">Tax (10%):</span>
                             <span id="tax" class="font-medium">₱0.00</span>
@@ -181,23 +185,9 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         let cart = [];
         let products = @json($products);
-
-        // Helper functions for showing messages
-        function showError(message) {
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'error',
-                title: message,
-                showConfirmButton: false,
-                timer: 2500,
-                timerProgressBar: true
-            });
-        }
         function showSuccess(message) {
             Swal.fire({
                 toast: true,
@@ -316,13 +306,34 @@
 
         // Update totals
         function updateTotals() {
-            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            let subtotal = 0;
+            let discount = 0;
+            cart.forEach(item => {
+                // Find the original price from products list
+                const product = products.find(p => p.id === item.product_id);
+                if (product) {
+                    const originalPrice = product.price;
+                    const discountedPrice = item.price;
+                    const itemDiscount = (originalPrice - discountedPrice) * item.quantity;
+                    discount += itemDiscount;
+                    subtotal += discountedPrice * item.quantity;
+                } else {
+                    subtotal += item.price * item.quantity;
+                }
+            });
             const tax = subtotal * 0.1;
             const total = subtotal + tax;
 
             $('#subtotal').text('₱' + subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 }));
             $('#tax').text('₱' + tax.toLocaleString('en-US', { minimumFractionDigits: 2 }));
             $('#total').text('₱' + total.toLocaleString('en-US', { minimumFractionDigits: 2 }));
+
+            if (discount > 0.009) {
+                $('#discount').text('-₱' + discount.toLocaleString('en-US', { minimumFractionDigits: 2 }));
+                $('#discountRow').show();
+            } else {
+                $('#discountRow').hide();
+            }
         }
 
         // Clear cart
@@ -356,48 +367,53 @@
                 }
             }
 
-            const saleData = {
-                items: cart.map(item => ({
-                    product_id: item.product_id,
-                    quantity: item.quantity
-                })),
-                payment_method: paymentMethod,
-                notes: $('#notes').val()
-            };
+            // Show confirmation dialog
+            showConfirm('Confirm Sale', 'Are you sure you want to process this sale?', function() {
+                showInfo('Processing sale...');
+                
+                const saleData = {
+                    items: cart.map(item => ({
+                        product_id: item.product_id,
+                        quantity: item.quantity
+                    })),
+                    payment_method: paymentMethod,
+                    notes: $('#notes').val()
+                };
 
-            // Add card number or mobile payment reference if applicable
-            if (paymentMethod === 'card') {
-                saleData.card_number = $('#cardNumber').val();
-            } else if (paymentMethod === 'mobile_payment') {
-                saleData.mobile_payment_reference = $('#mobilePaymentRef').val();
-            } else if (paymentMethod === 'cash') {
-                saleData.amount_tendered = $('#amountTendered').val();
-            }
-
-            $.ajax({
-                url: '{{ route("pos.process-sale") }}',
-                method: 'POST',
-                data: saleData,
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    if (response.success) {
-                        showSuccess('Sale processed successfully! Transaction: ' + response.transaction_number);
-                        cart = [];
-                        updateCartDisplay();
-                        $('#notes').val('');
-                        
-                        // Redirect to receipt
-                        window.open('{{ url("pos/receipt") }}/' + response.sale_id, '_blank');
-                        
-                        // Reload page to update recent sales
-                        setTimeout(() => location.reload(), 1000);
-                    }
-                },
-                error: function(xhr) {
-                    showError('Error processing sale: ' + xhr.responseJSON.message);
+                // Add card number or mobile payment reference if applicable
+                if (paymentMethod === 'card') {
+                    saleData.card_number = $('#cardNumber').val();
+                } else if (paymentMethod === 'mobile_payment') {
+                    saleData.mobile_payment_reference = $('#mobilePaymentRef').val();
+                } else if (paymentMethod === 'cash') {
+                    saleData.amount_tendered = $('#amountTendered').val();
                 }
+
+                $.ajax({
+                    url: '{{ route("pos.process-sale") }}',
+                    method: 'POST',
+                    data: saleData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showSuccess('Sale processed successfully! Transaction: ' + response.transaction_number);
+                            cart = [];
+                            updateCartDisplay();
+                            $('#notes').val('');
+                            
+                            // Redirect to receipt
+                            window.open('{{ url("pos/receipt") }}/' + response.sale_id, '_blank');
+                            
+                            // Reload page to update recent sales
+                            setTimeout(() => location.reload(), 1000);
+                        }
+                    },
+                    error: function(xhr) {
+                        showError('Error processing sale: ' + xhr.responseJSON.message);
+                    }
+                });
             });
         });
 
@@ -442,5 +458,29 @@
 
         // Initialize
         updateCartDisplay();
+    </script>
+    
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced notifications for POS operations
+        document.addEventListener('DOMContentLoaded', function() {
+            showSuccess('Welcome to POS System, {{ session("username", "Cashier") }}!');
+            
+            // Enhanced add to cart notification
+            const originalAddToCart = window.addToCart;
+            window.addToCart = function(productId, productName, price) {
+                const quantity = document.getElementById('quantity-' + productId).value;
+                if (quantity <= 0) {
+                    showWarning('Please select a valid quantity');
+                    return;
+                }
+                
+                showInfo(`Adding ${quantity} ${productName} to cart...`);
+                originalAddToCart(productId, productName, price);
+            };
+            
+
+        });
     </script>
 @endsection 

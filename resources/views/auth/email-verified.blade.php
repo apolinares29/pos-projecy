@@ -57,5 +57,14 @@
             </div>
         </div>
     </div>
+    
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced email verification notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showSuccess('Email verified successfully! Welcome to POS System!');
+        });
+    </script>
 </body>
 </html> 

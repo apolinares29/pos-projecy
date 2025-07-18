@@ -45,7 +45,7 @@
                         <div class="ml-5 w-0 flex-1">
                             <dl>
                                 <dt class="text-sm font-medium text-gray-500 truncate">Today's Sales</dt>
-                                <dd class="text-lg font-medium text-gray-900">${{ number_format($todaySales, 2) }}</dd>
+                                <dd class="text-lg font-medium text-gray-900">₱{{ number_format($todaySales, 2) }}</dd>
                             </dl>
                         </div>
                     </div>
@@ -127,7 +127,7 @@
                                 {{ $sale->saleItems->count() }} items
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                ${{ number_format($sale->final_amount, 2) }}
+                                ₱{{ number_format($sale->final_amount, 2) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
@@ -163,5 +163,38 @@
     </div>
 
 
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced sales view notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showInfo('Sales data loaded successfully');
+            
+            // Auto-refresh sales data every 60 seconds
+            setInterval(function() {
+                fetch('{{ route("pos.sales") }}')
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newSalesTable = doc.querySelector('.overflow-x-auto');
+                        const currentSalesTable = document.querySelector('.overflow-x-auto');
+                        if (newSalesTable && currentSalesTable) {
+                            currentSalesTable.innerHTML = newSalesTable.innerHTML;
+                            showInfo('Sales data refreshed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing sales:', error);
+                    });
+            }, 60000);
+        });
+        
+        // Enhanced view receipt functionality
+        function viewReceipt(saleId) {
+            showInfo('Loading receipt...');
+            window.open('{{ url("pos/receipt") }}/' + saleId, '_blank');
+        }
+    </script>
 </body>
 </html> 

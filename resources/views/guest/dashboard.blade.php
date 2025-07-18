@@ -97,5 +97,38 @@
             <a href="#" class="hover:underline">Facebook</a>
         </div>
     </footer>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced guest dashboard notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showSuccess('Welcome to our store!');
+            
+            // Auto-refresh product data every 5 minutes
+            setInterval(function() {
+                fetch('{{ route("guest.dashboard") }}')
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newProductsGrid = doc.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3.gap-6');
+                        const currentProductsGrid = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3.gap-6');
+                        if (newProductsGrid && currentProductsGrid) {
+                            currentProductsGrid.innerHTML = newProductsGrid.innerHTML;
+                            showInfo('Product catalog refreshed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing products:', error);
+                    });
+            }, 300000);
+        });
+        
+        // Enhanced product view functionality
+        function viewProduct(productId, productName) {
+            showInfo(`Loading details for ${productName}...`);
+            // Add product detail view logic here
+        }
+    </script>
 </body>
 </html> 

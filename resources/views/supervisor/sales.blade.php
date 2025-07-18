@@ -148,10 +148,8 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex space-x-2">
-                                    <a href="{{ route('pos.receipt', $sale->id) }}" target="_blank" 
+                                    <a href="{{ route('supervisor.receipt', $sale->id) }}" target="_blank" 
                                        class="text-blue-600 hover:text-blue-900">Receipt</a>
-                                    <a href="{{ route('supervisor.edit-sale', $sale->id) }}" 
-                                       class="text-green-600 hover:text-green-900">Edit</a>
                                     <button onclick="deleteSale({{ $sale->id }})" 
                                             class="text-red-600 hover:text-red-900">Delete</button>
                                 </div>
@@ -239,6 +237,39 @@
                 closeDeleteModal();
             }
         });
+    </script>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced supervisor sales notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showInfo('Sales data loaded successfully');
+            
+            // Auto-refresh sales data every 60 seconds
+            setInterval(function() {
+                fetch('{{ route("supervisor.sales") }}')
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newSalesTable = doc.querySelector('.overflow-x-auto');
+                        const currentSalesTable = document.querySelector('.overflow-x-auto');
+                        if (newSalesTable && currentSalesTable) {
+                            currentSalesTable.innerHTML = newSalesTable.innerHTML;
+                            showInfo('Sales data refreshed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing sales:', error);
+                    });
+            }, 60000);
+        });
+        
+        // Enhanced view receipt functionality
+        function viewReceipt(saleId) {
+            showInfo('Loading receipt...');
+            window.open('{{ url("pos/receipt") }}/' + saleId, '_blank');
+        }
     </script>
 </body>
 </html> 

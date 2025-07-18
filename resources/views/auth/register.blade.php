@@ -195,34 +195,14 @@
 @endsection
 
 @section('scripts')
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@include('components.notifications')
 <script>
-    // Notification helpers
+    // Enhanced notification helpers
     function showSuccessAndRedirect(message, redirectUrl) {
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'success',
-            title: message,
-            showConfirmButton: false,
-            timer: 1800,
-            timerProgressBar: true,
-            didClose: () => {
-                window.location.href = redirectUrl;
-            }
-        });
-    }
-    function showError(message) {
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'error',
-            title: message,
-            showConfirmButton: false,
-            timer: 2500,
-            timerProgressBar: true
-        });
+        showSuccess(message);
+        setTimeout(() => {
+            window.location.href = redirectUrl;
+        }, 2000);
     }
 </script>
 <script>
@@ -251,7 +231,12 @@
         const passwordConfirmation = document.getElementById('password_confirmation').value;
 
         if (password !== passwordConfirmation) {
-            showError('Passwords do not match!');
+            Swal.fire({
+                icon: 'error',
+                title: 'Registration Failed',
+                text: 'Passwords do not match!',
+                confirmButtonText: 'OK',
+            });
             return;
         }
 
@@ -277,13 +262,32 @@
             },
             body: formData
         })
-        .then(response => response.json())
-        .then(data => {
+        .then(async response => {
+            let data;
+            try {
+                data = await response.json();
+            } catch (e) {
+                // Not JSON, show error
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Registration Failed',
+                    text: 'Invalid server response.'
+                });
+                console.error('Non-JSON response:', response);
+                return;
+            }
+            console.log('Registration response:', data);
             if (data.success) {
-                showSuccessAndRedirect(data.message, '/');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Account successfully registered!',
+                    text: data.message,
+                    confirmButtonText: 'OK',
+                }).then(() => {
+                    window.location.href = '/';
+                });
             } else {
                 let errorMessage = data.message || 'Registration failed. Please try again.';
-                
                 // Show validation errors if available
                 if (data.errors) {
                     errorMessage = 'Please fix the following errors:\n';
@@ -291,8 +295,12 @@
                         errorMessage += `• ${data.errors[field][0]}\n`;
                     });
                 }
-                
-                showError(errorMessage);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Registration Failed',
+                    text: errorMessage,
+                    confirmButtonText: 'OK',
+                });
             }
         })
         .catch(error => {

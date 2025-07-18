@@ -69,7 +69,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                ${{ number_format($product->price, 2) }}
+                                ₱{{ number_format($product->price, 2) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <button onclick="openStockModal({{ $product->id }}, '{{ $product->name }}', {{ $product->stock_quantity }})" 
@@ -112,7 +112,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                ${{ number_format($product->price, 2) }}
+                                ₱{{ number_format($product->price, 2) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <button onclick="openStockModal({{ $product->id }}, '{{ $product->name }}', 0)" 
@@ -159,6 +159,8 @@
         </div>
     </div>
 
+    @include('components.notifications')
+    
     <script>
         function openStockModal(productId, productName, currentStock) {
             document.getElementById('productName').textContent = productName;

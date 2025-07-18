@@ -94,6 +94,7 @@ Route::prefix('supervisor')->name('supervisor.')->middleware(['session.auth', 'r
     Route::get('/sales/{id}/edit', [POSController::class, 'editSale'])->name('edit-sale');
     Route::put('/sales/{id}', [POSController::class, 'updateSale'])->name('update-sale');
     Route::delete('/sales/{id}', [POSController::class, 'deleteSale'])->name('delete-sale');
+    Route::get('/receipt/{saleId}', [\App\Http\Controllers\SupervisorController::class, 'printReceipt'])->name('receipt');
 });
 
 // Administrator routes

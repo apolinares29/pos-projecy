@@ -189,5 +189,33 @@
             </div>
         </div>
     </div>
+    @include('components.notifications')
+    
+    <script>
+        // Auto-refresh dashboard data every 30 seconds
+        setInterval(function() {
+            fetch('{{ route("supervisor.index") }}')
+                .then(response => response.text())
+                .then(html => {
+                    // Update only the metrics section
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newMetrics = doc.querySelector('.grid.grid-cols-1.md\\:grid-cols-4.gap-6');
+                    const currentMetrics = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-4.gap-6');
+                    if (newMetrics && currentMetrics) {
+                        currentMetrics.innerHTML = newMetrics.innerHTML;
+                        showInfo('Dashboard data refreshed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error refreshing dashboard:', error);
+                });
+        }, 30000);
+
+        // Show welcome notification
+        document.addEventListener('DOMContentLoaded', function() {
+            showSuccess('Welcome back, {{ session("username", "Supervisor") }}!');
+        });
+    </script>
 </body>
 </html> 

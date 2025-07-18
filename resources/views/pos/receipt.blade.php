@@ -62,8 +62,8 @@
                     <p class="text-sm text-gray-600">{{ $item->product->sku }}</p>
                 </div>
                 <div class="text-right">
-                    <p class="font-medium">${{ number_format($item->unit_price, 2) }} x {{ $item->quantity }}</p>
-                    <p class="font-bold">${{ number_format($item->total_price, 2) }}</p>
+                                            <p class="font-medium">₱{{ number_format($item->unit_price, 2) }} x {{ $item->quantity }}</p>
+                        <p class="font-bold">₱{{ number_format($item->total_price, 2) }}</p>
                 </div>
             </div>
             @endforeach
@@ -73,21 +73,19 @@
         <div class="border-t-2 border-gray-300 pt-4 mb-4">
             <div class="flex justify-between mb-2">
                 <span>Subtotal:</span>
-                <span>${{ number_format($sale->total_amount, 2) }}</span>
+                                    <span>₱{{ number_format($sale->total_amount, 2) }}</span>
             </div>
             <div class="flex justify-between mb-2">
                 <span>Tax (10%):</span>
-                <span>${{ number_format($sale->tax_amount, 2) }}</span>
+                                    <span>₱{{ number_format($sale->tax_amount, 2) }}</span>
             </div>
-            @if($sale->discount_amount > 0)
             <div class="flex justify-between mb-2">
                 <span>Discount:</span>
-                <span>-${{ number_format($sale->discount_amount, 2) }}</span>
+                                    <span>-₱{{ number_format($sale->discount_amount, 2) }}</span>
             </div>
-            @endif
             <div class="flex justify-between text-lg font-bold border-t pt-2">
                 <span>TOTAL:</span>
-                <span>${{ number_format($sale->final_amount, 2) }}</span>
+                                    <span>₱{{ number_format($sale->final_amount, 2) }}</span>
             </div>
         </div>
 
@@ -122,6 +120,31 @@
             // Uncomment the line below to auto-print
             // window.print();
         };
+    </script>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced receipt notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showSuccess('Receipt generated successfully!');
+            
+            // Auto-print functionality
+            setTimeout(() => {
+                window.print();
+            }, 1000);
+        });
+        
+        // Enhanced print functionality
+        function printReceipt() {
+            showInfo('Printing receipt...');
+            window.print();
+        }
+        
+        // Enhanced email functionality
+        function emailReceipt() {
+            showInfo('Sending receipt via email...');
+            // Add email functionality here
+        }
     </script>
 </body>
 </html> 

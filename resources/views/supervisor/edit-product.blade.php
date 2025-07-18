@@ -138,5 +138,18 @@
             </form>
         </div>
     </div>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced edit product notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showInfo('Editing product: {{ $product->name }}');
+        });
+        
+        // Enhanced form submission
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            showInfo('Updating product...');
+        });
+    </script>
 </body>
 </html> 

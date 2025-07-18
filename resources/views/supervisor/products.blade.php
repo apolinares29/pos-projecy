@@ -209,5 +209,40 @@
             }
         });
     </script>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced supervisor products notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showInfo('Products data loaded successfully');
+            
+            // Auto-refresh products data every 2 minutes
+            setInterval(function() {
+                fetch('{{ route("supervisor.products") }}')
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newProductsTable = doc.querySelector('.overflow-x-auto');
+                        const currentProductsTable = document.querySelector('.overflow-x-auto');
+                        if (newProductsTable && currentProductsTable) {
+                            currentProductsTable.innerHTML = newProductsTable.innerHTML;
+                            showInfo('Products data refreshed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing products:', error);
+                    });
+            }, 120000);
+        });
+        
+        // Enhanced delete confirmation
+        function confirmDeleteProduct(productId, productName) {
+            confirmDelete('Delete Product', `Are you sure you want to delete ${productName}?`, function() {
+                showInfo('Deleting product...');
+                window.location.href = `{{ url('supervisor/products') }}/${productId}/delete`;
+            });
+        }
+    </script>
 </body>
 </html> 

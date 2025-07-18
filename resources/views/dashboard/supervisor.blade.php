@@ -56,7 +56,7 @@
                         <div class="ml-5 w-0 flex-1">
                             <dl>
                                 <dt class="text-sm font-medium text-gray-500 truncate">Today's Sales</dt>
-                                <dd class="text-lg font-medium text-gray-900">$12,450</dd>
+                                <dd class="text-lg font-medium text-gray-900">₱12,450</dd>
                             </dl>
                         </div>
                     </div>
@@ -120,7 +120,7 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-sm font-medium text-gray-900">$2,340</p>
+                                                    <p class="text-sm font-medium text-gray-900">₱2,340</p>
                         <p class="text-xs text-gray-500">Today's sales</p>
                     </div>
                 </div>
@@ -136,7 +136,7 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-sm font-medium text-gray-900">$1,890</p>
+                                                    <p class="text-sm font-medium text-gray-900">₱1,890</p>
                         <p class="text-xs text-gray-500">Today's sales</p>
                     </div>
                 </div>
@@ -152,12 +152,45 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-sm font-medium text-gray-900">$3,120</p>
+                                                    <p class="text-sm font-medium text-gray-900">₱3,120</p>
                         <p class="text-xs text-gray-500">Today's sales</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced supervisor dashboard notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showSuccess('Welcome back, {{ session("username", "Supervisor") }}!');
+            
+            // Auto-refresh dashboard data every 30 seconds
+            setInterval(function() {
+                fetch('{{ route("dashboard.supervisor") }}')
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newMetrics = doc.querySelector('.grid.grid-cols-1.md\\:grid-cols-3.gap-6');
+                        const currentMetrics = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-3.gap-6');
+                        if (newMetrics && currentMetrics) {
+                            currentMetrics.innerHTML = newMetrics.innerHTML;
+                            showInfo('Dashboard data refreshed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing dashboard:', error);
+                    });
+            }, 30000);
+        });
+        
+        // Enhanced quick actions
+        function quickAction(action) {
+            showInfo(`Performing ${action}...`);
+            // Add specific action logic here
+        }
+    </script>
 </body>
 </html> 

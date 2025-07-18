@@ -150,5 +150,18 @@
             </div>
         </div>
     </div>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced create user notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showInfo('Please fill in the user details');
+        });
+        
+        // Enhanced form submission
+        document.getElementById('userForm').addEventListener('submit', function(e) {
+            showInfo('Creating user...');
+        });
+    </script>
 </body>
 </html> 

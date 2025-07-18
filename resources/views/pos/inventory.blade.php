@@ -150,7 +150,7 @@
                                     {{ $product->category }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${{ number_format($product->price, 2) }}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">₱{{ number_format($product->price, 2) }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $product->stock_quantity }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($product->stock_quantity == 0)
@@ -179,5 +179,38 @@
             {{ $products->onEachSide(1)->links('pagination::tailwind') }}
         </div>
     </div>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced inventory view notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showInfo('Inventory data loaded successfully');
+            
+            // Auto-refresh inventory data every 2 minutes
+            setInterval(function() {
+                fetch('{{ route("pos.inventory") }}')
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newInventoryTable = doc.querySelector('.overflow-x-auto');
+                        const currentInventoryTable = document.querySelector('.overflow-x-auto');
+                        if (newInventoryTable && currentInventoryTable) {
+                            currentInventoryTable.innerHTML = newInventoryTable.innerHTML;
+                            showInfo('Inventory data refreshed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing inventory:', error);
+                    });
+            }, 120000);
+        });
+        
+        // Enhanced search functionality
+        function searchProducts() {
+            const searchTerm = document.getElementById('search').value;
+            showInfo(`Searching for: ${searchTerm}`);
+        }
+    </script>
 </body>
 </html> 

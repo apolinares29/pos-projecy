@@ -128,5 +128,18 @@
             </form>
         </div>
     </div>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced create product notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showInfo('Please fill in the product details');
+        });
+        
+        // Enhanced form submission
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            showInfo('Creating product...');
+        });
+    </script>
 </body>
 </html> 

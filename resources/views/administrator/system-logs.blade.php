@@ -177,18 +177,16 @@
         <div class="mt-8 bg-white shadow rounded-lg p-6">
             <h3 class="text-lg font-medium text-gray-900 mb-4">Log Management</h3>
             <div class="flex space-x-4">
-                <button onclick="exportLogs('csv')" 
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                <a href="{{ route('administrator.export-logs-csv') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
                     Export Logs (CSV)
-                </button>
-                <button onclick="exportLogs('json')" 
-                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                </a>
+                <a href="{{ route('administrator.export-logs-json') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
                     Export Logs (JSON)
-                </button>
-                <form method="POST" action="{{ route('administrator.clear-old-logs') }}" style="display:inline;">
+                </a>
+                <form id="clearLogsForm" method="POST" action="{{ route('administrator.clear-old-logs') }}" style="display:inline;">
                     @csrf
-                    <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        Clear Old Logs
+                    <button type="button" onclick="confirmClearLogs()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        Clear Logs
                     </button>
                 </form>
             </div>
@@ -244,37 +242,50 @@
             });
         }
 
-        function exportLogs(format) {
-            const url = format === 'csv' 
-                ? '{{ route("administrator.export-logs-csv") }}'
-                : '{{ route("administrator.export-logs-json") }}';
-            
-            // Create a temporary link and trigger download
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `system-logs.${format}`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            showSuccess(`Logs exported successfully as ${format.toUpperCase()} file`);
+        function confirmClearLogs() {
+            showConfirm('Clear All Logs', 'Are you sure you want to clear ALL logs? This action cannot be undone.', function() {
+                document.getElementById('clearLogsForm').submit();
+            });
         }
-
+    </script>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced administrator system logs notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showInfo('System logs loaded successfully');
+            
+            // Auto-refresh logs data every 2 minutes
+            setInterval(function() {
+                fetch('{{ route("administrator.logs") }}')
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newLogsTable = doc.querySelector('.overflow-x-auto');
+                        const currentLogsTable = document.querySelector('.overflow-x-auto');
+                        if (newLogsTable && currentLogsTable) {
+                            currentLogsTable.innerHTML = newLogsTable.innerHTML;
+                            showInfo('System logs refreshed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing logs:', error);
+                    });
+            }, 120000);
+        });
+        
+        // Enhanced export functionality
+        function exportLogs(format) {
+            showInfo(`Exporting logs in ${format} format...`);
+            window.location.href = `{{ url('administrator/system-logs/export') }}?format=${format}`;
+        }
+        
+        // Enhanced clear logs functionality
         function clearOldLogs() {
-            showConfirm('Clear Old Logs', 'Are you sure you want to clear old logs? This action cannot be undone.', function() {
-                // Create a form and submit it
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '{{ route("administrator.clear-old-logs") }}';
-                
-                const csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                
-                form.appendChild(csrfToken);
-                document.body.appendChild(form);
-                form.submit();
+            showConfirm('Clear Old Logs', 'Are you sure you want to clear logs older than 30 days?', function() {
+                showInfo('Clearing old logs...');
+                window.location.href = '{{ url("administrator/system-logs/clear") }}';
             });
         }
     </script>

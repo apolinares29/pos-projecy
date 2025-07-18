@@ -37,31 +37,14 @@
 <?php echo 'window.otpError = ' . json_encode($errors->any() ? $errors->first() : null) . ';'; ?>
 </script>
 @section('scripts')
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@include('components.notifications')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     if (window.otpStatus) {
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'success',
-            title: window.otpStatus,
-            showConfirmButton: false,
-            timer: 2500,
-            timerProgressBar: true
-        });
+        showSuccess(window.otpStatus);
     }
     if (window.otpError) {
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'error',
-            title: window.otpError,
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true
-        });
+        showError(window.otpError);
     }
 
     // OTP Countdown Timer

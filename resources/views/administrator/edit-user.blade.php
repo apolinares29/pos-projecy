@@ -149,5 +149,18 @@
             </div>
         </div>
     </div>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced edit user notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showInfo('Editing user: {{ $user->username }}');
+        });
+        
+        // Enhanced form submission
+        document.getElementById('userForm').addEventListener('submit', function(e) {
+            showInfo('Updating user...');
+        });
+    </script>
 </body>
 </html> 

@@ -214,5 +214,38 @@
             }
         });
     </script>
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced supervisor team performance notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showInfo('Team performance data loaded successfully');
+            
+            // Auto-refresh performance data every 5 minutes
+            setInterval(function() {
+                fetch('{{ route("supervisor.team-performance") }}')
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newPerformanceContent = doc.querySelector('.space-y-8');
+                        const currentPerformanceContent = document.querySelector('.space-y-8');
+                        if (newPerformanceContent && currentPerformanceContent) {
+                            currentPerformanceContent.innerHTML = newPerformanceContent.innerHTML;
+                            showInfo('Team performance data refreshed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing performance data:', error);
+                    });
+            }, 300000);
+        });
+        
+        // Enhanced performance actions
+        function viewPerformanceDetails(userId, userName) {
+            showInfo(`Loading performance details for ${userName}...`);
+            // Add detailed view logic here
+        }
+    </script>
 </body>
 </html> 

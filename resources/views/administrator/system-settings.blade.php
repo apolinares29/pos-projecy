@@ -49,6 +49,7 @@
                         <select name="currency" id="currency" 
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500"
                                 required>
+                            <option value="PHP" {{ old('currency', $settings['currency']) == 'PHP' ? 'selected' : '' }}>PHP (₱)</option>
                             <option value="USD" {{ old('currency', $settings['currency']) == 'USD' ? 'selected' : '' }}>USD ($)</option>
                             <option value="EUR" {{ old('currency', $settings['currency']) == 'EUR' ? 'selected' : '' }}>EUR (€)</option>
                             <option value="GBP" {{ old('currency', $settings['currency']) == 'GBP' ? 'selected' : '' }}>GBP (£)</option>
@@ -209,7 +210,7 @@
             showConfirm('Reset Settings', 'Are you sure you want to reset all settings to their default values?', function() {
                 // Reset form fields to default values
                 document.getElementById('company_name').value = 'TechStore POS';
-                document.getElementById('currency').value = 'USD';
+                document.getElementById('currency').value = 'PHP';
                 document.getElementById('tax_rate').value = '10.0';
                 document.getElementById('low_stock_threshold').value = '10';
                 document.getElementById('session_timeout').value = '30';
@@ -237,6 +238,20 @@
                 showInfo('Database optimization started. This may take a few minutes.');
             });
         }
+    </script>
+    
+    @include('components.notifications')
+    
+    <script>
+        // Enhanced system settings notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            showInfo('System settings loaded successfully');
+        });
+        
+        // Enhanced form submission
+        document.getElementById('settingsForm').addEventListener('submit', function(e) {
+            showInfo('Saving settings...');
+        });
     </script>
 </body>
 </html> 

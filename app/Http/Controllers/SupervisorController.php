@@ -279,4 +279,10 @@ class SupervisorController extends Controller
         
         return view('supervisor.sales', compact('sales', 'todaySales', 'todayTransactions'));
     }
+
+    public function printReceipt($saleId)
+    {
+        $sale = \App\Models\Sale::with(['user', 'saleItems.product'])->findOrFail($saleId);
+        return view('pos.receipt', compact('sale'));
+    }
 } 
