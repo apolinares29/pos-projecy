@@ -65,7 +65,7 @@
                         @enderror
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
                             <div class="mt-1 relative rounded-lg shadow-sm">
@@ -80,13 +80,21 @@
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
-
                         <div>
                             <label for="stock_quantity" class="block text-sm font-medium text-gray-700">Stock Quantity</label>
                             <input type="number" name="stock_quantity" id="stock_quantity" min="0" required
                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    placeholder="0">
                             @error('stock_quantity')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <label for="max_stock" class="block text-sm font-medium text-gray-700">Max Stock</label>
+                            <input type="number" name="max_stock" id="max_stock" min="1" required
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   placeholder="0">
+                            @error('max_stock')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>

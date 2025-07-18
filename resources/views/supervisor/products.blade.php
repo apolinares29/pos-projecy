@@ -102,7 +102,7 @@
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
                                         Out of Stock
                                     </span>
-                                @elseif($product->stock_quantity <= $product->low_stock)
+                                @elseif($product->stock_quantity > 0 && $product->stock_quantity <= ceil($product->max_stock / 4))
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
                                         Low Stock
                                     </span>
