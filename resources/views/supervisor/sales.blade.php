@@ -150,8 +150,6 @@
                                 <div class="flex space-x-2">
                                     <a href="{{ route('supervisor.receipt', $sale->id) }}" target="_blank" 
                                        class="text-blue-600 hover:text-blue-900">Receipt</a>
-                                    <button onclick="deleteSale({{ $sale->id }})" 
-                                            class="text-red-600 hover:text-red-900">Delete</button>
                                 </div>
                             </td>
                         </tr>
@@ -167,77 +165,6 @@
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div class="mt-3 text-center">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                    <span class="text-red-600 text-xl">⚠️</span>
-                </div>
-                <h3 class="text-lg font-medium text-gray-900 mt-4">Delete Sale</h3>
-                <div class="mt-2 px-7 py-3">
-                    <p class="text-sm text-gray-500">
-                        Are you sure you want to delete this sale? This action cannot be undone.
-                    </p>
-                </div>
-                <div class="items-center px-4 py-3">
-                    <button id="confirmDelete" class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-24 mr-2 hover:bg-red-600">
-                        Delete
-                    </button>
-                    <button onclick="closeDeleteModal()" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-24 hover:bg-gray-600">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let saleToDelete = null;
-
-        function deleteSale(saleId) {
-            saleToDelete = saleId;
-            document.getElementById('deleteModal').classList.remove('hidden');
-        }
-
-        function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.add('hidden');
-            saleToDelete = null;
-        }
-
-        document.getElementById('confirmDelete').addEventListener('click', function() {
-            if (saleToDelete) {
-                // Create a form to submit the delete request
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '{{ url("supervisor/sales") }}/' + saleToDelete;
-                
-                // Add CSRF token
-                const csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = '{{ csrf_token() }}';
-                form.appendChild(csrfToken);
-                
-                // Add method override
-                const methodField = document.createElement('input');
-                methodField.type = 'hidden';
-                methodField.name = '_method';
-                methodField.value = 'DELETE';
-                form.appendChild(methodField);
-                
-                document.body.appendChild(form);
-                form.submit();
-            }
-        });
-
-        // Close modal when clicking outside
-        document.getElementById('deleteModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeDeleteModal();
-            }
-        });
-    </script>
     @include('components.notifications')
     
     <script>

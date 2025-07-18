@@ -35,7 +35,7 @@
 
         <!-- Low Stock Products -->
         <div class="bg-white shadow rounded-lg p-6 mb-8">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Low Stock Products (≤10 items)</h3>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Low Stock Products</h3>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -50,6 +50,7 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($lowStockProducts as $product)
+                        @if($product->stock_quantity > 0 && $product->stock_quantity <= ceil($product->max_stock / 4))
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div>
@@ -76,6 +77,7 @@
                                         class="text-blue-600 hover:text-blue-900">Update Stock</button>
                             </td>
                         </tr>
+                        @endif
                         @endforeach
                     </tbody>
                 </table>

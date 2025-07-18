@@ -134,6 +134,9 @@ class AdministratorController extends Controller
         
         // Prevent deleting the last administrator
         if ($user->role === 'administrator' && User::where('role', 'administrator')->count() <= 1) {
+            if (request()->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Cannot delete the last administrator'], 400);
+            }
             return redirect()->route('administrator.users')->with('error', 'Cannot delete the last administrator');
         }
         
@@ -141,6 +144,9 @@ class AdministratorController extends Controller
         // Log user deletion
         ActivityLogger::log('delete', 'User', $id, 'User deleted.');
 
+        if (request()->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'User deleted successfully!']);
+        }
         return redirect()->route('administrator.users')->with('success', 'User deleted successfully!');
     }
 

@@ -48,7 +48,7 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($users as $user)
-                        <tr class="hover:bg-gray-50">
+                        <tr class="hover:bg-gray-50" id="user-row-{{ $user->id }}">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
@@ -195,11 +195,21 @@
             }, 120000);
         });
         
-        // Enhanced delete confirmation
+        // Simple SweetAlert2 confirmation and form submit for delete
         function confirmDeleteUser(userId, userName) {
-            confirmDelete('Delete User', `Are you sure you want to delete ${userName}?`, function() {
-                showInfo('Deleting user...');
-                document.getElementById('deleteUserForm' + userId).submit();
+            Swal.fire({
+                title: 'Delete User',
+                text: `Are you sure you want to delete ${userName}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteUserForm' + userId).submit();
+                }
             });
         }
     </script>

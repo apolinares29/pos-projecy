@@ -196,8 +196,8 @@ class SupervisorController extends Controller
 
     public function lowStock()
     {
-        $lowStockProducts = Product::where('stock_quantity', '<=', 10)
-            ->where('stock_quantity', '>', 0)
+        $lowStockProducts = Product::where('stock_quantity', '>', 0)
+            ->whereRaw('stock_quantity <= CEIL(max_stock / 4)')
             ->orderBy('stock_quantity')
             ->get();
             
